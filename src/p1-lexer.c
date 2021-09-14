@@ -18,9 +18,9 @@ TokenQueue* lex (char* text)
     /* compile regular expressions */
     Regex* whitespace = Regex_new("^[ \n]");
     Regex* letter = Regex_new("^[a-z]");
-    Regex* symbol = Regex_new("(|)|+|*");
-    Regex* integer = Regex_new("0|[1-9][0-9]*");
-    Regex* identifiers = Regex_new("[a-zA-Z]([0-9]|_|[a-zA-Z])");
+    Regex* symbol = Regex_new("\(|\)|\+|\*"); // took the \ from the lab3 doc
+    Regex* integer = Regex_new("0|([1-9][0-9]*)");
+    Regex* identifiers = Regex_new("[a-zA-Z][a-zA-Z0-9_]*");
 
     /* read and handle input */
     char match[MAX_TOKEN_LEN];
