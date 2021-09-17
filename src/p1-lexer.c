@@ -18,8 +18,8 @@ TokenQueue *lex(char *text)
     TokenQueue *tokens = TokenQueue_new();
 
     /* compile regular expressions */
-    Regex *whitespace = Regex_new("^[ \n]");
-    Regex *endofline = Regex_new("[ ]*\n");
+    Regex *whitespace = Regex_new("^[ ]");
+    Regex *endofline = Regex_new("\n");
     Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
     // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
     Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|)|;");
@@ -35,7 +35,7 @@ TokenQueue *lex(char *text)
 
     if (text == NULL)
     {
-        return tokens;
+        Error_throw_printf("Invalid token!\n");
     }
 
     while (*text != '\0')
@@ -45,10 +45,6 @@ TokenQueue *lex(char *text)
         if (Regex_match(endofline, text, match)) // increment line number when finding \n
         {
             line = line + 1;
-        }
-        else if (Regex_match(whitespace, text, match)) 
-        {    
-            // ignore whitespace
         }
         else if (Regex_match(hexidecimal, text, match)) // hex
         {
@@ -84,6 +80,10 @@ TokenQueue *lex(char *text)
         else if (Regex_match(comments, text, match)) // comments
         {
             // Nothing. End of line character is handled in whitespace
+        }        
+        else if (Regex_match(whitespace, text, match)) 
+        {    
+            // ignore whitespace
         }
         else // invalid token
         {
@@ -92,7 +92,7 @@ TokenQueue *lex(char *text)
 
         /* skip matched text to look for next token */
         text += strlen(match);
-        memset(match, '\0', MAX_TOKEN_LEN);
+        // memset(match, '\0', MAX_TOKEN_LEN);
     }
 
     /* clean up */
@@ -117,7 +117,7 @@ bool isKey(char *key)
 
     while (i < keysSize && !isKey)
     {
-        if (strcmp(key, keys[i]) == 0)
+        if (!strcmp(key, keys[i]))
         {
             isKey = true;
         }
