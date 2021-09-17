@@ -20,8 +20,9 @@ TokenQueue *lex(char *text)
     /* compile regular expressions */
     Regex *whitespace = Regex_new("^[ \n]");
     Regex *endofline = Regex_new("[ ]*\n");
-    Regex *letter = Regex_new("^[a-z]");                                            // this isnt actually being used anywhere from what i can tell
-    Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // took the \ from the lab3 doc
+    Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
+    // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
+    Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|)|;");
     Regex *integer = Regex_new("0|([1-9][0-9]*)");
     Regex *identifiers = Regex_new("^[a-zA-Z][a-zA-Z0-9_]*");
     Regex *hexidecimal = Regex_new("^0x[a-f0-9][a-f0-9]*");
@@ -41,14 +42,13 @@ TokenQueue *lex(char *text)
     {
 
         /* match regular expressions */
-        if (Regex_match(whitespace, text, match)) // ignore whitespace
+        if (Regex_match(endofline, text, match)) // increment line number when finding \n
         {
-            // add to line count
-            // I don't know if this actually should go here
-            if (Regex_match(endofline, text, match)) // ignore whitespace
-            {
-                line = line + 1;
-            }
+            line = line + 1;
+        }
+        else if (Regex_match(whitespace, text, match)) 
+        {    
+            // ignore whitespace
         }
         else if (Regex_match(hexidecimal, text, match)) // hex
         {
@@ -81,7 +81,7 @@ TokenQueue *lex(char *text)
         {
             TokenQueue_add(tokens, Token_new(SYM, match, line));
         }
-        else if (Regex_match(comments, text, match)) // symbol
+        else if (Regex_match(comments, text, match)) // comments
         {
             // Nothing. End of line character is handled in whitespace
         }
@@ -92,11 +92,19 @@ TokenQueue *lex(char *text)
 
         /* skip matched text to look for next token */
         text += strlen(match);
+        memset(match, '\0', MAX_TOKEN_LEN);
     }
 
     /* clean up */
     Regex_free(whitespace);
     Regex_free(letter);
+    Regex_free(endofline);
+    Regex_free(symbol);
+    Regex_free(integer);
+    Regex_free(identifiers);
+    Regex_free(hexidecimal);
+    Regex_free(comments);
+    Regex_free(strings); 
 
     return tokens;
 }

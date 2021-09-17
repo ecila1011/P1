@@ -1,12 +1,5 @@
 Running suite(s): Default
-50%: Checks: 20, Failures: 8, Errors: 2
-public.c:15:F:Public:D_single_letter_id:0: Assertion 'valid_1token("a", ID, "a")' failed
-public.c:16:F:Public:D_multi_letter_id:0: Assertion 'valid_1token("abc", ID, "abc")' failed
-public.c:24:F:Public:C_multi_tokens:0: Assertion 'valid_2tokens("123 foo", DECLIT, "123", ID, "foo")' failed
-public.c:26:E:Public:B_keyword:0: (after this point) Test timeout expired
-public.c:27:F:Public:B_invalid_for:0: Assertion 'invalid_tokens("for")' failed
+85%: Checks: 20, Failures: 3, Errors: 0
 public.c:30:F:Public:B_multi_tokens1:0: Assertion 'valid_2tokens("def  ab", KEY, "def", ID, "ab")' failed
 public.c:35:F:Public:B_multi_tokens2:0: Assertion 'valid_tokens("def foo;", 3, multi_tokens2)' failed
-public.c:37:F:Public:A_comments:0: Assertion 'valid_0tokens("// test")' failed
-public.c:38:F:Public:A_keyword_id:0: Assertion 'valid_1token("int3", ID, "int3")' failed
-private.c:5:E:Private:A_null_string:0: (after this point) Received signal 11 (Segmentation fault)
+private.c:10:F:Private:A_null_string:0: Assertion '0' failed
