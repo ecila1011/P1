@@ -19,11 +19,11 @@ TokenQueue *lex(char *text)
 
     /* compile regular expressions */
     Regex *whitespace = Regex_new("^[ ]");
-    Regex *endofline = Regex_new("\n");
+    Regex *endofline = Regex_new("^\n");
     Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
     // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
-    Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|)|;");
-    Regex *integer = Regex_new("0|([1-9][0-9]*)");
+    Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|=|==|!=|&&|(\\|\\|)|;");
+    Regex *integer = Regex_new("^0|(^[1-9][0-9]*)");
     Regex *identifiers = Regex_new("^[a-zA-Z][a-zA-Z0-9_]*");
     Regex *hexidecimal = Regex_new("^0x[a-f0-9][a-f0-9]*");
     Regex *comments = Regex_new("^[//][^\n]*");
@@ -45,6 +45,11 @@ TokenQueue *lex(char *text)
         if (Regex_match(endofline, text, match)) // increment line number when finding \n
         {
             line = line + 1;
+            text += 1;
+        }
+        if (Regex_match(whitespace, text, match)) 
+        {    
+            // ignore whitespace
         }
         else if (Regex_match(hexidecimal, text, match)) // hex
         {
@@ -56,11 +61,11 @@ TokenQueue *lex(char *text)
         }
         else if (Regex_match(identifiers, text, match)) // starts off as identifier
         {
-            if (isKey(text)) // check to see if id is a keyword
+            if (isKey(match)) // check to see if id is a keyword
             {
                 TokenQueue_add(tokens, Token_new(KEY, match, line));
             }
-            else if (isReserved(text)) // check to see if id is a reserved word
+            else if (isReserved(match)) // check to see if id is a reserved word
             {
                 Error_throw_printf("Invalid token!\n");
             }
@@ -80,11 +85,7 @@ TokenQueue *lex(char *text)
         else if (Regex_match(comments, text, match)) // comments
         {
             // Nothing. End of line character is handled in whitespace
-        }        
-        else if (Regex_match(whitespace, text, match)) 
-        {    
-            // ignore whitespace
-        }
+        }     
         else // invalid token
         {
             Error_throw_printf("Invalid token!\n");
@@ -104,7 +105,7 @@ TokenQueue *lex(char *text)
     Regex_free(identifiers);
     Regex_free(hexidecimal);
     Regex_free(comments);
-    Regex_free(strings); 
+    Regex_free(strings);
 
     return tokens;
 }
@@ -112,10 +113,24 @@ TokenQueue *lex(char *text)
 /* use this method to check if the found token is a keyword*/
 bool isKey(char *key)
 {
+
+    //Regex *keys[] = {Regex_new("^def\\s*"), Regex_new("if\\s*"), Regex_new("else\\s*"), Regex_new("while\\s*"), Regex_new("return\\s*"), Regex_new("^break\\s*"), 
+// Regex_new("continue\\s*"), Regex_new("^i^n^t\\s*"), Regex_new("bool\\s*"), Regex_new("void\\s*"), Regex_new("true\\s*"), Regex_new("^false\\s*")};
     bool isKey = false;
     int i = 0;
+    // char match[MAX_TOKEN_LEN];
 
-    while (i < keysSize && !isKey)
+
+    // while (i < keysSize && !isKey)
+    // {
+    //     if (Regex_match(keys[i], key, match))
+    //     {
+    //         isKey = true;
+    //     }
+    //     i += 1;
+    // }
+
+        while (i < keysSize && !isKey)
     {
         if (!strcmp(key, keys[i]))
         {
@@ -130,12 +145,25 @@ bool isKey(char *key)
 /* use this method to check if the found token is a reserved word*/
 bool isReserved(char *key)
 {
+   // Regex *reserved[] = {Regex_new("for\\s*"), Regex_new("callout\\s*"), Regex_new("class\\s*"), Regex_new("interface\\s*"), Regex_new("extends\\s*"), Regex_new("implements\\s*"), 
+//Regex_new("new\\s*"), Regex_new("this\\s*"), Regex_new("string\\s*"), Regex_new("float\\s*"), Regex_new("double\\s*"), Regex_new("null\\s*")};
+
     bool isReserved = false;
     int i = 0;
+    //char match[MAX_TOKEN_LEN];
+
+    // while (i < reservedSize && !isReserved)
+    // {
+    //     if (Regex_match(reserved[i], key, match))
+    //     {
+    //         isReserved = true;
+    //     }
+    //     i += 1;
+    // }
 
     while (i < reservedSize && !isReserved)
     {
-        if (strcmp(key, reserved[i]) == 0)
+        if (!strcmp(key, reserved[i]))
         {
             isReserved = true;
         }

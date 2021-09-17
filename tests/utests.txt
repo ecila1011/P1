@@ -1,4 +1,2 @@
 Running suite(s): Default
-90%: Checks: 20, Failures: 2, Errors: 0
-public.c:30:F:Public:B_multi_tokens1:0: Assertion 'valid_2tokens("def  ab", KEY, "def", ID, "ab")' failed
-public.c:35:F:Public:B_multi_tokens2:0: Assertion 'valid_tokens("def foo;", 3, multi_tokens2)' failed
+100%: Checks: 20, Failures: 0, Errors: 0
