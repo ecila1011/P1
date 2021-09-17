@@ -18,8 +18,8 @@ TokenQueue *lex(char *text)
     TokenQueue *tokens = TokenQueue_new();
 
     /* compile regular expressions */
-    Regex *whitespace = Regex_new("^[ ]");
-    Regex *endofline = Regex_new("^\n");
+    Regex *whitespace = Regex_new("^[ \r\n\t]");
+    Regex *endofline = Regex_new("[\n");
     Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
     // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
     Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|=|==|!=|&&|(\\|\\|)|;");
@@ -35,21 +35,23 @@ TokenQueue *lex(char *text)
 
     if (text == NULL)
     {
-        Error_throw_printf("Invalid token!\n");
+        Error_throw_printf("Invalid token! 1\n");
+        return tokens;
     }
 
     while (*text != '\0')
     {
 
         /* match regular expressions */
-        if (Regex_match(endofline, text, match)) // increment line number when finding \n
+        if (Regex_match(whitespace, text, match))
         {
-            line = line + 1;
-            text += 1;
-        }
-        if (Regex_match(whitespace, text, match)) 
-        {    
             // ignore whitespace
+            // Check for end of line
+            char eol [1] = "\n";
+            if (strstr(match, eol) != NULL) // increment line number when finding \n
+            {
+                line = line + 1;
+            }
         }
         else if (Regex_match(hexidecimal, text, match)) // hex
         {
@@ -67,7 +69,7 @@ TokenQueue *lex(char *text)
             }
             else if (isReserved(match)) // check to see if id is a reserved word
             {
-                Error_throw_printf("Invalid token!\n");
+                Error_throw_printf("Invalid token! 2\n");
             }
             else
             {
@@ -85,10 +87,10 @@ TokenQueue *lex(char *text)
         else if (Regex_match(comments, text, match)) // comments
         {
             // Nothing. End of line character is handled in whitespace
-        }     
+        }
         else // invalid token
         {
-            Error_throw_printf("Invalid token!\n");
+            Error_throw_printf("Invalid token! 3\n");
         }
 
         /* skip matched text to look for next token */
@@ -114,12 +116,11 @@ TokenQueue *lex(char *text)
 bool isKey(char *key)
 {
 
-    //Regex *keys[] = {Regex_new("^def\\s*"), Regex_new("if\\s*"), Regex_new("else\\s*"), Regex_new("while\\s*"), Regex_new("return\\s*"), Regex_new("^break\\s*"), 
-// Regex_new("continue\\s*"), Regex_new("^i^n^t\\s*"), Regex_new("bool\\s*"), Regex_new("void\\s*"), Regex_new("true\\s*"), Regex_new("^false\\s*")};
+    //Regex *keys[] = {Regex_new("^def\\s*"), Regex_new("if\\s*"), Regex_new("else\\s*"), Regex_new("while\\s*"), Regex_new("return\\s*"), Regex_new("^break\\s*"),
+    // Regex_new("continue\\s*"), Regex_new("^i^n^t\\s*"), Regex_new("bool\\s*"), Regex_new("void\\s*"), Regex_new("true\\s*"), Regex_new("^false\\s*")};
     bool isKey = false;
     int i = 0;
     // char match[MAX_TOKEN_LEN];
-
 
     // while (i < keysSize && !isKey)
     // {
@@ -130,7 +131,7 @@ bool isKey(char *key)
     //     i += 1;
     // }
 
-        while (i < keysSize && !isKey)
+    while (i < keysSize && !isKey)
     {
         if (!strcmp(key, keys[i]))
         {
@@ -145,8 +146,8 @@ bool isKey(char *key)
 /* use this method to check if the found token is a reserved word*/
 bool isReserved(char *key)
 {
-   // Regex *reserved[] = {Regex_new("for\\s*"), Regex_new("callout\\s*"), Regex_new("class\\s*"), Regex_new("interface\\s*"), Regex_new("extends\\s*"), Regex_new("implements\\s*"), 
-//Regex_new("new\\s*"), Regex_new("this\\s*"), Regex_new("string\\s*"), Regex_new("float\\s*"), Regex_new("double\\s*"), Regex_new("null\\s*")};
+    // Regex *reserved[] = {Regex_new("for\\s*"), Regex_new("callout\\s*"), Regex_new("class\\s*"), Regex_new("interface\\s*"), Regex_new("extends\\s*"), Regex_new("implements\\s*"),
+    //Regex_new("new\\s*"), Regex_new("this\\s*"), Regex_new("string\\s*"), Regex_new("float\\s*"), Regex_new("double\\s*"), Regex_new("null\\s*")};
 
     bool isReserved = false;
     int i = 0;
