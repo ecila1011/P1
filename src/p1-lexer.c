@@ -1,6 +1,7 @@
 /**
  * @file p1-lexer.c
  * @brief Compiler phase 1: lexer
+ * Team Lima: Alice Robertson and Alexander Bain
  */
 #include "p1-lexer.h"
 
@@ -20,8 +21,7 @@ TokenQueue *lex(char *text)
     /* compile regular expressions */
     Regex *whitespace = Regex_new("^[ \n\r\t]");
     Regex *endofline = Regex_new("[\n]");
-    Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
-    // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
+    Regex *letter = Regex_new("^[a-z]"); 
     Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|=|==|!=|&&|(\\|\\|)|;");
     Regex *integer = Regex_new("^0|(^[1-9][0-9]*)");
     Regex *identifiers = Regex_new("^[a-zA-Z][a-zA-Z0-9_]*");
@@ -96,7 +96,6 @@ TokenQueue *lex(char *text)
 
         /* skip matched text to look for next token */
         text += strlen(match);
-        // memset(match, '\0', MAX_TOKEN_LEN);
     }
 
     /* clean up */
@@ -116,21 +115,8 @@ TokenQueue *lex(char *text)
 /* use this method to check if the found token is a keyword*/
 bool isKey(char *key)
 {
-
-    //Regex *keys[] = {Regex_new("^def\\s*"), Regex_new("if\\s*"), Regex_new("else\\s*"), Regex_new("while\\s*"), Regex_new("return\\s*"), Regex_new("^break\\s*"),
-    // Regex_new("continue\\s*"), Regex_new("^i^n^t\\s*"), Regex_new("bool\\s*"), Regex_new("void\\s*"), Regex_new("true\\s*"), Regex_new("^false\\s*")};
-    bool isKey = false;
+     bool isKey = false;
     int i = 0;
-    // char match[MAX_TOKEN_LEN];
-
-    // while (i < keysSize && !isKey)
-    // {
-    //     if (Regex_match(keys[i], key, match))
-    //     {
-    //         isKey = true;
-    //     }
-    //     i += 1;
-    // }
 
     while (i < keysSize && !isKey)
     {
@@ -147,21 +133,8 @@ bool isKey(char *key)
 /* use this method to check if the found token is a reserved word*/
 bool isReserved(char *key)
 {
-    // Regex *reserved[] = {Regex_new("for\\s*"), Regex_new("callout\\s*"), Regex_new("class\\s*"), Regex_new("interface\\s*"), Regex_new("extends\\s*"), Regex_new("implements\\s*"),
-    //Regex_new("new\\s*"), Regex_new("this\\s*"), Regex_new("string\\s*"), Regex_new("float\\s*"), Regex_new("double\\s*"), Regex_new("null\\s*")};
-
     bool isReserved = false;
     int i = 0;
-    //char match[MAX_TOKEN_LEN];
-
-    // while (i < reservedSize && !isReserved)
-    // {
-    //     if (Regex_match(reserved[i], key, match))
-    //     {
-    //         isReserved = true;
-    //     }
-    //     i += 1;
-    // }
 
     while (i < reservedSize && !isReserved)
     {

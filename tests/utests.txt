@@ -1,3 +1,2 @@
 Running suite(s): Default
-95%: Checks: 20, Failures: 1, Errors: 0
-public.c:37:F:Public:A_comments:0: Assertion 'valid_0tokens("// test")' failed
+100%: Checks: 20, Failures: 0, Errors: 0
