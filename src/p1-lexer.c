@@ -18,16 +18,16 @@ TokenQueue *lex(char *text)
     TokenQueue *tokens = TokenQueue_new();
 
     /* compile regular expressions */
-    Regex *whitespace = Regex_new("^[ \r\n\t]");
-    Regex *endofline = Regex_new("[\n");
+    Regex *whitespace = Regex_new("^[ \n\r\t]");
+    Regex *endofline = Regex_new("[\n]");
     Regex *letter = Regex_new("^[a-z]"); // this isnt actually being used anywhere from what i can tell
     // Regex *symbol = Regex_new("\\(|\\)|\\+|\\*|-|!|%|<|<=|>=|>|==|!=|&&|(\\|\\|;)"); // I think we're missing a few
     Regex *symbol = Regex_new("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|!|%|<|<=|>=|>|=|==|!=|&&|(\\|\\|)|;");
     Regex *integer = Regex_new("^0|(^[1-9][0-9]*)");
     Regex *identifiers = Regex_new("^[a-zA-Z][a-zA-Z0-9_]*");
     Regex *hexidecimal = Regex_new("^0x[a-f0-9][a-f0-9]*");
-    Regex *comments = Regex_new("^[//][^\n]*");
-    Regex *strings = Regex_new("^\"[a-zA-Z]*\""); // placeholder, not sure this is correct
+    Regex *comments = Regex_new("[//][^\n]*[\n]");
+    Regex *strings = Regex_new("^\"[^\"]*\"");
 
     /* read and handle input */
     char match[MAX_TOKEN_LEN];
@@ -47,7 +47,7 @@ TokenQueue *lex(char *text)
         {
             // ignore whitespace
             // Check for end of line
-            char eol [1] = "\n";
+            char *eol = "\n";
             if (strstr(match, eol) != NULL) // increment line number when finding \n
             {
                 line = line + 1;
@@ -86,7 +86,8 @@ TokenQueue *lex(char *text)
         }
         else if (Regex_match(comments, text, match)) // comments
         {
-            // Nothing. End of line character is handled in whitespace
+            line = line + 1;
+            text += 1;
         }
         else // invalid token
         {

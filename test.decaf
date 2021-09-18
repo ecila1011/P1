@@ -1,3 +1,4 @@
+// hello
 def int main()
 {
     int a;
