@@ -26,7 +26,7 @@ TokenQueue *lex(char *text)
     Regex *integer = Regex_new("^0|(^[1-9][0-9]*)");
     Regex *identifiers = Regex_new("^[a-zA-Z][a-zA-Z0-9_]*");
     Regex *hexidecimal = Regex_new("^0x[a-f0-9][a-f0-9]*");
-    Regex *comments = Regex_new("[//][^\n]*[\n]");
+    Regex *comments = Regex_new("^[//][ ]*[^\n]*");
     Regex *strings = Regex_new("^\"[^\"]*\"");
 
     /* read and handle input */
@@ -52,6 +52,11 @@ TokenQueue *lex(char *text)
             {
                 line = line + 1;
             }
+        }
+        else if (Regex_match(comments, text, match)) // comments
+        {
+            line = line + 1;
+            text += 1;
         }
         else if (Regex_match(hexidecimal, text, match)) // hex
         {
@@ -83,11 +88,6 @@ TokenQueue *lex(char *text)
         else if (Regex_match(symbol, text, match)) // symbol
         {
             TokenQueue_add(tokens, Token_new(SYM, match, line));
-        }
-        else if (Regex_match(comments, text, match)) // comments
-        {
-            line = line + 1;
-            text += 1;
         }
         else // invalid token
         {
